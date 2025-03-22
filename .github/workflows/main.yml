@@ -21,12 +21,24 @@ jobs:
           context: ./src
           push: true
           file: ./src/Dockerfile
-          tags: andreluiz901/fake-shop-desafio:v${{ github.run_number }}
+          tags: | 
+            andreluiz901/fake-shop-desafio:v${{ github.run_number }}
+            andreluiz901/fake-shop-desafio:latest
           
   CD:
     needs: [CI]
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Obter código"
-      - run: echo "configurar o kubeconfig"
-      - run: echo "executar o apply"
+      - name: Obtendo o codigo
+        uses: actions/checkout@v4.2.2
+
+        - uses: azure/k8s-set-context@v4
+          with:
+            method: kubeconfig
+            kubeconfig: {{ secrets.K8S_KUBECONFIG }}
+
+        - uses: Azure/k8s-deploy@v5
+          with:
+            manifests: |
+                k8s/deployment.yaml
+            images: andreluiz901/fake-shop-desafio:v${{ github.run_number }}
