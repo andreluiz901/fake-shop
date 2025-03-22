@@ -32,15 +32,14 @@ jobs:
       - name: Obtendo o codigo
         uses: actions/checkout@v4.2.2
 
-      - name: Kube Config
-        uses: azure/k8s-set-context@v4
-          with:
-            method: kubeconfig
-            kubeconfig: {{ secrets.K8S_KUBECONFIG }}
+      - uses: azure/k8s-set-context@v4
+        with:
+          method: kubeconfig
+          kubeconfig: {{ secrets.K8S_KUBECONFIG }}
 
-        - name: Deploy da aplicação
-        - uses: Azure/k8s-deploy@v5
+      - uses: Azure/k8s-deploy@v5
           with:
             manifests: |
-                k8s/deployment.yaml
-            images: andreluiz901/fake-shop-desafio:v${{ github.run_number }}
+              k8s/deployment.yaml
+            images: |
+              andreluiz901/fake-shop-desafio:v${{ github.run_number }}
